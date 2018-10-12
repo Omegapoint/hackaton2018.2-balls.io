@@ -15,7 +15,7 @@
   </head>
   <body>
     <h1>BumberBalls.io</h1>
-    <canvas id="game_board" width="400" height="400" style="border:1px solid #000000;" tabindex="-1" autofocus>
+    <canvas id="game_board" width="400" height="400" style="border:1px solid #000000;" tabindex="0" autofocus>
     </canvas>
     <ul id="messages"></ul>
     <form action="">
@@ -56,10 +56,12 @@
           $('#m').val('');
           return false;
         });
+        var lastTime;
         socket.on('init', function(data) {
           console.log("init",data);
           localData[data.id] = data;
           currentId = data.id;
+          lastTime = Date.now();
           calcPositions();
           drawBalls();
         });
@@ -84,9 +86,12 @@
         }
 
         function calcPositions() {
+          var now = Date.now();
+          var delta = now - lastTime;
+          lastTime = now;
           Object.values(localData).forEach(data => {
-            data.x += data.vx;
-            data.y += data.vy;
+            data.x += data.vx * delta/200;
+            data.y += data.vy * delta/200;
           });
           socket.emit('user_action', localData[currentId]);
           setTimeout(calcPositions, 200);
