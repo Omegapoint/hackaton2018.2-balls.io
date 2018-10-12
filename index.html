@@ -14,6 +14,7 @@
     </style>
   </head>
   <body>
+    <h1>BumberBalls.io</h1>
     <canvas id="game_board" width="400" height="400" style="border:1px solid #000000;" tabindex="-1" autofocus>
     </canvas>
     <ul id="messages"></ul>
@@ -24,29 +25,31 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
-        var currentData = {};
+        var currentId;
         var localData = {};
         var socket = io();
         var c = document.getElementById("game_board");
         var ctx = c.getContext("2d");
+        var requestAnimationFrame = window.requestAnimationFrame ||
+                            window.mozRequestAnimationFrame ||
+                            window.webkitRequestAnimationFrame ||
+                            window.msRequestAnimationFrame;
         c.addEventListener( "keypress", doKeyDown, false );
         function doKeyDown(e) {
+          var currentData = localData[currentId];
           if (e.key === "w") {
-            currentData.y--;
-            socket.emit('user_action', currentData);
+            currentData.vy--;
           }
           if (e.key === "s") {
-            currentData.y++;
-            socket.emit('user_action', currentData);
+            currentData.vy++;
           }
           if (e.key === "a") {
-            currentData.x--;
-            socket.emit('user_action', currentData);
+            currentData.vx--;
           }
           if (e.key === "d") {
-            currentData.x++;
-            socket.emit('user_action', currentData);
+            currentData.vx++;
           }
+
         }
         $('form').submit(function(){
           socket.emit('chat message', $('#m').val());
@@ -55,7 +58,10 @@
         });
         socket.on('init', function(data) {
           console.log("init",data);
-          currentData = data;
+          localData[data.id] = data;
+          currentId = data.id;
+          calcPositions();
+          drawBalls();
         });
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
@@ -63,7 +69,6 @@
         socket.on('user_action', function(data){
           console.log(data);
           localData[data.id] = data;
-          drawBalls();
         });
 
         function drawBalls() {
@@ -75,6 +80,16 @@
             ctx.fill();
             ctx.closePath();
           });
+          requestAnimationFrame(drawBalls);
+        }
+
+        function calcPositions() {
+          Object.values(localData).forEach(data => {
+            data.x += data.vx;
+            data.y += data.vy;
+          });
+          socket.emit('user_action', localData[currentId]);
+          setTimeout(calcPositions, 200);
         }
       });
     </script>

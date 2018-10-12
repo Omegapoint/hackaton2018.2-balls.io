@@ -11,7 +11,7 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
   console.log('a user connected');
   var connectionUid = uid++;
-  socket.emit('init', {id: connectionUid, x: 50, y:50});
+  socket.emit('init', {id: connectionUid, x: 50, y:50, vx: 0 , vy:0});
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
