@@ -31,7 +31,7 @@
         var currentId;
         var userDatas = {};
         var socket = io();
-        var scores = {};
+        var finalScore = 0;
         var c = document.getElementById("game_board");
         c.focus();
         var ctx = c.getContext("2d");
@@ -79,15 +79,11 @@
         });
         socket.on('kill', killId => {
           console.log("Kill: ", killId);
+          finalScore = userDatas[killId].score;
           delete userDatas[killId];
           if(currentId == killId){
             iAmAlive = false;
           }
-        });
-
-        socket.on('add_score', scoreData => {
-          scores[scoreData.id] = scores[scoreData.id] || 0;
-          scores[scoreData.id] += scoreData.score;
         });
 
         socket.on('highscore', highscore => {
@@ -118,7 +114,7 @@
             ctx.fillStyle = "#FF0000";
             ctx.textAlign = 'center';
             ctx.fillText("!!!Game Over!!!!", 400, 300)
-            ctx.fillText("Score: " + (scores[currentId] || 0), 400, 400)
+            ctx.fillText("Score: " + finalScore, 400, 400)
           }
           requestAnimationFrame(drawBalls);
         }

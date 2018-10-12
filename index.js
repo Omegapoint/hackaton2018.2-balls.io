@@ -72,7 +72,6 @@ function bumped(currentData){
       if (speed(currentData) > speed(data)) {
         killId = data.id;
         score += data.score;
-        io.emit('add_score', {id: currentData.id, score: score});
         currentData.score += score;
         if (currentData.score > highScore.value) {
           highScore.value = currentData.score;
@@ -82,7 +81,6 @@ function bumped(currentData){
       } else {
         killId = currentData.id;
         score += currentData.store;
-        io.emit('add_score', {id: data.id, score: score});
         data.score += score;
         if (data.score > highScore.value) {
           highScore.value = data.score;
