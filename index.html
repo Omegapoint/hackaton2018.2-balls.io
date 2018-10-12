@@ -29,6 +29,7 @@
         var localData = {};
         var socket = io();
         var c = document.getElementById("game_board");
+        c.focus();
         var ctx = c.getContext("2d");
         var requestAnimationFrame = window.requestAnimationFrame ||
                             window.mozRequestAnimationFrame ||
@@ -89,12 +90,13 @@
           var now = Date.now();
           var delta = now - lastTime;
           lastTime = now;
+          var interval = 50;
           Object.values(localData).forEach(data => {
-            data.x += data.vx * delta/200;
-            data.y += data.vy * delta/200;
+            data.x += data.vx * delta/interval;
+            data.y += data.vy * delta/interval;
           });
           socket.emit('user_action', localData[currentId]);
-          setTimeout(calcPositions, 200);
+          setTimeout(calcPositions, interval);
         }
       });
     </script>
