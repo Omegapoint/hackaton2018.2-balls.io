@@ -93,7 +93,7 @@
           Object.values(userDatas).forEach(data => {
             ctx.beginPath();
             ctx.arc(data.x, data.y, 20, 0, 2 * Math.PI);
-            ctx.fillStyle = "#0095DD";
+            ctx.fillStyle = data.color;
             if(data.id === currentId){
               ctx.lineWidth=10;
               ctx.stroke();
@@ -102,7 +102,7 @@
             ctx.closePath();
             var score = scores[data.id] || 0;
             ctx.font = 'normal bold 10px sans-serif';
-            ctx.fillStyle = "#00FF00";
+            ctx.fillStyle = "#000000";
             ctx.textAlign = 'center';
             ctx.fillText(score,data.x,data.y+5);
           });
@@ -111,6 +111,7 @@
             ctx.fillStyle = "#FF0000";
             ctx.textAlign = 'center';
             ctx.fillText("!!!Game Over!!!!", 400, 300)
+            ctx.fillText("Score: " + scores[currentId] || 0, 400, 400)
           }
           requestAnimationFrame(drawBalls);
         }

@@ -9,12 +9,19 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+var colors = ["#FF0000", "#00FF00", "#8d8d8d"];
+
 io.on('connection', function(socket){
   console.log('a user connected');
   var connectionUid = uid++;
   var randomX = 50 + 700 * Math.random();
   var randomY = 50 + 500 * Math.random();
-  userDatas[connectionUid] = {id: connectionUid, x: randomX, y:randomY, vx: 0 , vy:0};
+  //Random colors
+  var r = 75 + Math.round(Math.random()*125);
+  var g = 75 + Math.round(Math.random()*125);
+  var b = 75 + Math.round(Math.random()*125);
+  var color = "rgba(" + r + "," + g + "," + b +",1)";
+  userDatas[connectionUid] = {id: connectionUid, x: randomX, y:randomY, vx: 0 , vy:0, color: color};
   socket.emit('init', userDatas[connectionUid]);
 
   socket.on('disconnect', function(){
