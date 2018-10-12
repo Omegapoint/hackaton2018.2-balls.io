@@ -26,7 +26,7 @@
     <script>
       $(function () {
         var currentId;
-        var localData = {};
+        var userDatas = {};
         var socket = io();
         var c = document.getElementById("game_board");
         c.focus();
@@ -37,7 +37,7 @@
                             window.msRequestAnimationFrame;
         c.addEventListener( "keypress", doKeyDown, false );
         function doKeyDown(e) {
-          var currentData = localData[currentId];
+          var currentData = userDatas[currentId];
           if (e.key === "w") {
             currentData.vy--;
           }
@@ -60,7 +60,7 @@
         var lastTime;
         socket.on('init', function(data) {
           console.log("init",data);
-          localData[data.id] = data;
+          userDatas[data.id] = data;
           currentId = data.id;
           lastTime = Date.now();
           calcPositions();
@@ -71,15 +71,22 @@
         });
         socket.on('user_action', function(data){
           console.log(data);
-          localData[data.id] = data;
+          userDatas[data.id] = data;
+        });
+        socket.on('kill', killId => {
+          console.log("Kill: ", killId);
+          delete userDatas[killId];
         });
 
         function drawBalls() {
           ctx.clearRect(0, 0, c.width, c.height);
-          Object.values(localData).forEach(data => {
+          Object.values(userDatas).forEach(data => {
             ctx.beginPath();
             ctx.arc(data.x, data.y, 40, 0, 2 * Math.PI);
             ctx.fillStyle = "#0095DD";
+            if(data.id === currentId){
+              ctx.stroke();
+            }
             ctx.fill();
             ctx.closePath();
           });
@@ -91,11 +98,13 @@
           var delta = now - lastTime;
           lastTime = now;
           var interval = 50;
-          Object.values(localData).forEach(data => {
+          Object.values(userDatas).forEach(data => {
             data.x += data.vx * delta/interval;
             data.y += data.vy * delta/interval;
           });
-          socket.emit('user_action', localData[currentId]);
+          if (userDatas[currentId]) {
+            socket.emit('user_action', userDatas[currentId]);
+          }
           setTimeout(calcPositions, interval);
         }
       });
