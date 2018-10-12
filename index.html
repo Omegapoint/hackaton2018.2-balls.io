@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>balls.io</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -14,7 +14,7 @@
     </style>
   </head>
   <body>
-    <canvas id="game_board" width="400" height="400" style="border:1px solid #000000;" tabindex="-1">
+    <canvas id="game_board" width="400" height="400" style="border:1px solid #000000;" tabindex="-1" autofocus>
     </canvas>
     <ul id="messages"></ul>
     <form action="">
@@ -24,7 +24,8 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
-        var currentData = {id:"Samuel", x: 50, y:50};
+        var currentData = {};
+        var localData = {};
         var socket = io();
         var c = document.getElementById("game_board");
         var ctx = c.getContext("2d");
@@ -52,15 +53,29 @@
           $('#m').val('');
           return false;
         });
+        socket.on('init', function(data) {
+          console.log("init",data);
+          currentData = data;
+        });
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
         });
         socket.on('user_action', function(data){
           console.log(data);
-          ctx.beginPath();
-          ctx.arc(data.x, data.y, 40, 0, 2 * Math.PI);
-          ctx.stroke();
+          localData[data.id] = data;
+          drawBalls();
         });
+
+        function drawBalls() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          Object.values(localData).forEach(data => {
+            ctx.beginPath();
+            ctx.arc(data.x, data.y, 40, 0, 2 * Math.PI);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+          });
+        }
       });
     </script>
   </body>

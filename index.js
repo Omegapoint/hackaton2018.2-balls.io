@@ -2,12 +2,16 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var uid = 0;
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  var connectionUid = uid++;
+  socket.emit('init', {id: connectionUid, x: 50, y:50});
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
