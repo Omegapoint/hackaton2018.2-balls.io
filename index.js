@@ -36,7 +36,8 @@ io.on('connection', function(socket){
   });
   socket.on('user_action', function(data) {
     if (userDatas[data.id]) {
-      userDatas[data.id] = data;
+      var tmpScore = userDatas[data.id].score;
+      userDatas[data.id] = {...data, tmpScore } ;
       var killId = bumped(data) || hitWall(data);
       if (killId) {
         delete userDatas[killId];
