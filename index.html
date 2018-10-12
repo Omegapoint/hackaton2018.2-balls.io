@@ -14,6 +14,8 @@
     </style>
   </head>
   <body>
+    <canvas id="game_board" width="200" height="100" style="border:1px solid #000000;">
+    </canvas>
     <ul id="messages"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
@@ -23,6 +25,8 @@
     <script>
       $(function () {
         var socket = io();
+        var c = document.getElementById("game_board");
+        var ctx = c.getContext("2d");
         $('form').submit(function(){
           socket.emit('chat message', $('#m').val());
           $('#m').val('');
@@ -30,6 +34,12 @@
         });
         socket.on('chat message', function(msg){
           $('#messages').append($('<li>').text(msg));
+        });
+        socket.on('user_action', function(data){
+          console.log(data);
+          ctx.beginPath();
+          ctx.arc(data.x, data.y, 40, 0, 2 * Math.PI);
+          ctx.stroke();
         });
       });
     </script>
