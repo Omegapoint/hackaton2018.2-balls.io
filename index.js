@@ -6,7 +6,7 @@ var uid = 1;
 var userDatas = {};
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');cv
+  res.sendFile(__dirname + '/index.html');
 });
 
 var colors = ["#FF0000", "#00FF00", "#8d8d8d"];
