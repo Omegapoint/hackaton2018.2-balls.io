@@ -2,7 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var uid = 0;
+var uid = 1;
 var userDatas = {};
 
 app.get('/', function(req, res){
@@ -56,10 +56,13 @@ function bumped(currentData){
   Object.values(userDatas).filter(data => data.id != currentData.id).some(data => {
     if(pytCalc(currentData, data) < 20*2 ){
       console.log("Collision",currentData.id,data.id);
+      var score = Math.round(pytCalc({x: currentData.vx, y: currentData.vy},{x: data.vx, y: data.vy}));
       if (speed(currentData) > speed(data)) {
         killId = data.id;
+        io.emit('add_score', {id: currentData.id, score: score});
       } else {
         killId = currentData.id;
+        io.emit('add_score', {id: data.id, score: score});
       }
       return true;
     } else {

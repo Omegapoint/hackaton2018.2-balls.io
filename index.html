@@ -29,6 +29,7 @@
         var currentId;
         var userDatas = {};
         var socket = io();
+        var scores = {};
         var c = document.getElementById("game_board");
         c.focus();
         var ctx = c.getContext("2d");
@@ -82,6 +83,11 @@
           }
         });
 
+        socket.on('add_score', scoreData => {
+          scores[scoreData.id] = scores[scoreData.id] || 0;
+          scores[scoreData.id] += scoreData.score;
+        });
+
         function drawBalls() {
           ctx.clearRect(0, 0, c.width, c.height);
           Object.values(userDatas).forEach(data => {
@@ -94,6 +100,11 @@
             }
             ctx.fill();
             ctx.closePath();
+            var score = scores[data.id] || 0;
+            ctx.font = 'normal bold 10px sans-serif';
+            ctx.fillStyle = "#00FF00";
+            ctx.textAlign = 'center';
+            ctx.fillText(score,data.x,data.y+5);
           });
           if(!iAmAlive){
             ctx.font = 'normal bold 80px sans-serif';
