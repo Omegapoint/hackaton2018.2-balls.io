@@ -25,6 +25,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
+        var iAmAlive = true;
         var currentId;
         var userDatas = {};
         var socket = io();
@@ -76,6 +77,9 @@
         socket.on('kill', killId => {
           console.log("Kill: ", killId);
           delete userDatas[killId];
+          if(currentId == killId){
+            iAmAlive = false;
+          }
         });
 
         function drawBalls() {
@@ -85,11 +89,18 @@
             ctx.arc(data.x, data.y, 20, 0, 2 * Math.PI);
             ctx.fillStyle = "#0095DD";
             if(data.id === currentId){
+              ctx.lineWidth=10;
               ctx.stroke();
             }
             ctx.fill();
             ctx.closePath();
           });
+          if(!iAmAlive){
+            ctx.font = 'normal bold 80px sans-serif';
+            ctx.fillStyle = "#FF0000";
+            ctx.textAlign = 'center';
+            ctx.fillText("!!!Game Over!!!!", 400, 300)
+          }
           requestAnimationFrame(drawBalls);
         }
 
