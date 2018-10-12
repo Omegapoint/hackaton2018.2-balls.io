@@ -79,11 +79,11 @@
         });
         socket.on('kill', killId => {
           console.log("Kill: ", killId);
-          finalScore = userDatas[killId].score;
-          delete userDatas[killId];
           if(currentId == killId){
+            finalScore = userDatas[killId].score;
             iAmAlive = false;
           }
+          delete userDatas[killId];
         });
 
         socket.on('highscore', highscore => {
