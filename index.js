@@ -10,6 +10,7 @@ app.get('/', function(req, res){
 });
 
 var colors = ["#FF0000", "#00FF00", "#8d8d8d"];
+var highScore = {value: 0, color: "#ffffff"};
 
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -21,8 +22,9 @@ io.on('connection', function(socket){
   var g = 75 + Math.round(Math.random()*125);
   var b = 75 + Math.round(Math.random()*125);
   var color = "rgba(" + r + "," + g + "," + b +",1)";
-  userDatas[connectionUid] = {id: connectionUid, x: randomX, y:randomY, vx: 0 , vy:0, color: color};
+  userDatas[connectionUid] = {id: connectionUid, x: randomX, y:randomY, vx: 0 , vy:0, color: color, score:0};
   socket.emit('init', userDatas[connectionUid]);
+  socket.emit('highscore', highScore);
 
   socket.on('disconnect', function(){
     delete userDatas[connectionUid];
@@ -68,10 +70,24 @@ function bumped(currentData){
       var score = Math.round(pytCalc({x: currentData.vx, y: currentData.vy},{x: data.vx, y: data.vy}));
       if (speed(currentData) > speed(data)) {
         killId = data.id;
+        score += data.score;
         io.emit('add_score', {id: currentData.id, score: score});
+        currentData.score += score;
+        if (currentData.score > highScore.value) {
+          highScore.value = currentData.score;
+          highScore.color = currentData.color;
+          io.emit('highscore', highScore);
+        }
       } else {
         killId = currentData.id;
+        score += currentData.store;
         io.emit('add_score', {id: data.id, score: score});
+        data.score += score;
+        if (data.score > highScore.value) {
+          highScore.value = data.score;
+          highScore.color = data.color;
+          io.emit('highscore', highScore);
+        }
       }
       return true;
     } else {
