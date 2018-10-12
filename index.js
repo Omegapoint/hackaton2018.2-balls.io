@@ -12,7 +12,9 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
   console.log('a user connected');
   var connectionUid = uid++;
-  userDatas[connectionUid] = {id: connectionUid, x: 50, y:50, vx: 0 , vy:0};
+  var randomX = 50 + 700 * Math.random();
+  var randomY = 50 + 500 * Math.random();
+  userDatas[connectionUid] = {id: connectionUid, x: randomX, y:randomY, vx: 0 , vy:0};
   socket.emit('init', userDatas[connectionUid]);
 
   socket.on('disconnect', function(){
