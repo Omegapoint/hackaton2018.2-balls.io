@@ -6,7 +6,7 @@ var uid = 1;
 var userDatas = {};
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index.html');cv
 });
 
 var colors = ["#FF0000", "#00FF00", "#8d8d8d"];
@@ -37,7 +37,7 @@ io.on('connection', function(socket){
   socket.on('user_action', function(data) {
     if (userDatas[data.id]) {
       var tmpScore = userDatas[data.id].score;
-      userDatas[data.id] = {...data, tmpScore } ;
+      userDatas[data.id] = {...data, score: tmpScore } ;
       var killId = bumped(data) || hitWall(data);
       if (killId) {
         delete userDatas[killId];
