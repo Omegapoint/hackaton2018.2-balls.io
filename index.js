@@ -26,7 +26,7 @@ io.on('connection', function(socket){
   socket.on('user_action', function(data) {
     if (userDatas[data.id]) {
       userDatas[data.id] = data;
-      var killId = bumped(data);
+      var killId = bumped(data) || hitWall(data);
       if (killId) {
         delete userDatas[killId];
         io.emit('kill', killId);
@@ -42,10 +42,19 @@ http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
+function hitWall(currentData){
+  if(currentData.x + 20 > 800 || currentData.x -20 < 0){
+    return currentData.id
+  }
+  if(currentData.y + 20 > 600 || currentData.y -20 < 0){
+    return currentData.id
+  }
+}
+
 function bumped(currentData){
   var killId;
   Object.values(userDatas).filter(data => data.id != currentData.id).some(data => {
-    if(pytCalc(currentData, data) < 40*2 ){
+    if(pytCalc(currentData, data) < 20*2 ){
       console.log("Collision",currentData.id,data.id);
       if (speed(currentData) > speed(data)) {
         killId = data.id;
